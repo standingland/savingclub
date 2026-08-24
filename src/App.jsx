@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Sidebar } from './components/Sidebar.jsx';
 import { Toast } from './components/Toast.jsx';
 import { PayModal } from './components/PayModal.jsx';
+import { Login } from './pages/Login.jsx';
 import { Dashboard } from './pages/Dashboard.jsx';
 import { Circle } from './pages/Circle.jsx';
 import { Live } from './pages/Live.jsx';
@@ -29,6 +30,8 @@ function addBid(bids, b) {
 }
 
 export default function App() {
+  const [screen, setScreen] = useState('login');
+  const [phone, setPhone] = useState('');
   const [route, setRoute] = useState('dash');
   const [toast, setToast] = useState('');
   const [live, setLive] = useState({ phase: 'idle', secs: 0, bids: [], fired: 0 });
@@ -131,21 +134,17 @@ export default function App() {
     setRoute('dash');
   }, [form.name, showToast]);
 
+  if (screen === 'login') {
+    return <Login phone={phone} setPhone={setPhone} onEnter={() => setScreen('app')} />;
+  }
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'stretch', gap: 0 }}>
-      <Sidebar route={route} onNavigate={(r) => (r === 'live' ? goLive() : setRoute(r))} />
+      <Sidebar route={route} onNavigate={(r) => (r === 'live' ? goLive() : setRoute(r))} phone={phone} />
 
       <main style={{ flex: 1, minWidth: 0, padding: '30px 34px 70px', boxSizing: 'border-box', maxWidth: 1160 }}>
-        {route === 'dash' && (
-          <Dashboard
-            goCircle={() => setRoute('circle')}
-            goLive={goLive}
-            goOwner={() => setRoute('owner')}
-            goCreate={() => setRoute('create')}
-            openPay={openPay}
-          />
-        )}
-        {route === 'circle' && <Circle goLive={goLive} openPay={openPay} />}
+        {route === 'dash' && <Dashboard goCreate={() => setRoute('create')} openPay={openPay} />}
+        {route === 'circle' && <Circle goCreate={() => setRoute('create')} goDash={() => setRoute('dash')} />}
         {route === 'live' && (
           <Live
             phase={live.phase}
@@ -179,6 +178,7 @@ export default function App() {
 
       <PayModal
         open={payOpen}
+        due={null}
         slipSent={slipSent}
         onClose={() => setPayOpen(false)}
         onAttachSlip={() => {

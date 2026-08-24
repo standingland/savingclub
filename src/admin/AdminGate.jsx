@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { LogoMark } from '../components/ui/LogoMark.jsx';
+import { BrandMark } from '../components/ui/BrandMark.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { field } from './adminStyles.js';
 
 const PASSCODE = '1111';
-const SESSION_KEY = 'wongjai-admin-unlocked';
+const SESSION_KEY = 'saving-money-club-admin-unlocked';
 
 export function AdminGate({ children }) {
   const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
@@ -42,9 +42,9 @@ export function AdminGate({ children }) {
           textAlign: 'center',
         }}
       >
-        <LogoMark size={40} aura />
+        <BrandMark size={40} />
         <div>
-          <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 16 }}>วงใจ · หลังบ้าน</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16 }}>Saving Money Club · หลังบ้าน</div>
           <div style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', marginTop: 4 }}>กรอกรหัสผ่านเพื่อเข้าใช้งาน</div>
         </div>
         <input
