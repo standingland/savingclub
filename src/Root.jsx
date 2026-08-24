@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import App from './App.jsx';
 import { AdminApp } from './admin/AdminApp.jsx';
+import { AdminGate } from './admin/AdminGate.jsx';
 
 function getRoute() {
   return window.location.hash.startsWith('#/admin') ? 'admin' : 'app';
@@ -15,5 +16,11 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  return route === 'admin' ? <AdminApp /> : <App />;
+  return route === 'admin' ? (
+    <AdminGate>
+      <AdminApp />
+    </AdminGate>
+  ) : (
+    <App />
+  );
 }

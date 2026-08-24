@@ -4,8 +4,27 @@ import { Button } from '../components/ui/Button.jsx';
 import { card, field, th, td } from './adminStyles.js';
 import { Field } from './Field.jsx';
 
-const EMPTY_CIRCLE = { name: '', hand_amount: '', hands_count: '', bid_type: 'ดอกหัก', fee_percent: '2', payout_day: '25', start_date: '', owner_member_id: '' };
+const EMPTY_CIRCLE = {
+  name: '',
+  hand_amount: '',
+  hands_count: '',
+  bid_type: 'ดอกหัก',
+  fee_percent: '2',
+  frequency: 'รายเดือน',
+  payout_day: '25',
+  payout_weekday: '1',
+  start_date: '',
+  owner_member_id: '',
+};
 const BID_TYPES = ['ดอกหัก', 'ดอกตาม', 'เปียประมูลดอก', 'จับฉลาก'];
+const FREQUENCIES = ['รายวัน', 'รายสัปดาห์', 'รายเดือน'];
+const WEEKDAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+
+function scheduleLabel(c) {
+  if (c.frequency === 'รายวัน') return 'เก็บทุกวัน';
+  if (c.frequency === 'รายสัปดาห์') return `เก็บทุกสัปดาห์ · วัน${WEEKDAYS[c.payout_weekday ?? 1]}`;
+  return `เก็บทุกวันที่ ${c.payout_day ?? 25} ของเดือน`;
+}
 
 export function CirclesTab() {
   const [circles, setCircles] = useState([]);
@@ -55,7 +74,9 @@ export function CirclesTab() {
       hands_count: Number(form.hands_count),
       bid_type: form.bid_type,
       fee_percent: Number(form.fee_percent) || 0,
-      payout_day: Number(form.payout_day) || 25,
+      frequency: form.frequency,
+      payout_day: form.frequency === 'รายเดือน' ? Number(form.payout_day) || 25 : null,
+      payout_weekday: form.frequency === 'รายสัปดาห์' ? Number(form.payout_weekday) : null,
       start_date: form.start_date || null,
       owner_member_id: form.owner_member_id || null,
     });
@@ -125,13 +146,35 @@ export function CirclesTab() {
               ))}
             </select>
           </Field>
+          <Field label="ความถี่ในการเก็บเงิน/เปีย">
+            <select style={field} value={form.frequency} onChange={(e) => setForm({ ...form, frequency: e.target.value })}>
+              {FREQUENCIES.map((f) => (
+                <option key={f} value={f}>
+                  {f}
+                </option>
+              ))}
+            </select>
+          </Field>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <Field label="ค่าดูแลท้าว (%)">
               <input style={field} inputMode="numeric" value={form.fee_percent} onChange={(e) => setForm({ ...form, fee_percent: e.target.value })} />
             </Field>
-            <Field label="วันเปียของเดือน">
-              <input style={field} inputMode="numeric" value={form.payout_day} onChange={(e) => setForm({ ...form, payout_day: e.target.value })} />
-            </Field>
+            {form.frequency === 'รายเดือน' && (
+              <Field label="วันเปียของเดือน">
+                <input style={field} inputMode="numeric" value={form.payout_day} onChange={(e) => setForm({ ...form, payout_day: e.target.value })} />
+              </Field>
+            )}
+            {form.frequency === 'รายสัปดาห์' && (
+              <Field label="วันเปียในสัปดาห์">
+                <select style={field} value={form.payout_weekday} onChange={(e) => setForm({ ...form, payout_weekday: e.target.value })}>
+                  {WEEKDAYS.map((w, i) => (
+                    <option key={w} value={i}>
+                      {w}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
           </div>
           <Field label="วันเริ่มวง">
             <input style={field} type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
@@ -176,6 +219,7 @@ export function CirclesTab() {
                   <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>
                     ฿{Number(c.hand_amount).toLocaleString()} × {c.hands_count} มือ · {c.owner?.name || 'ไม่มีท้าว'}
                   </div>
+                  <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>{scheduleLabel(c)}</div>
                 </div>
                 <button
                   onClick={(e) => {
@@ -201,7 +245,7 @@ export function CirclesTab() {
             <div style={card}>
               <div style={{ fontWeight: 700, fontSize: 16 }}>{selected.name}</div>
               <div style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', marginTop: 2 }}>
-                ฿{Number(selected.hand_amount).toLocaleString()} × {selected.hands_count} มือ · {selected.bid_type} · ค่าดูแล {selected.fee_percent}%
+                ฿{Number(selected.hand_amount).toLocaleString()} × {selected.hands_count} มือ · {selected.bid_type} · ค่าดูแล {selected.fee_percent}% · {scheduleLabel(selected)}
               </div>
             </div>
 
