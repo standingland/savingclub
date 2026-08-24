@@ -1,0 +1,28 @@
+/* ============================================================
+   M Private Project — Typography tokens
+   Display = EB Garamond (serif), Body = Prompt (Thai+Latin),
+   Mono = JetBrains Mono. Headings are tight & slightly negative
+   tracked; body is generous at 1.6 line-height.
+   ============================================================ */
+:root {
+  --font-display: 'EB Garamond', Georgia, serif;
+  --font-body: 'Prompt', 'Inter', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Type scale (the app leans large & editorial) */
+  --text-eyebrow: 11px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-display: 54px;
+
+  --leading-tight: 1.1;
+  --leading-body: 1.6;
+  --tracking-display: -0.02em;
+  --tracking-eyebrow: 0.18em;
+}

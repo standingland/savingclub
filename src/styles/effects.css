@@ -1,0 +1,49 @@
+/* ============================================================
+   M Private Project — Effects: radii, shadows, gradients
+   The brand is soft & rounded with low-spread warm shadows and a
+   single signature pride gradient used as a hairline accent.
+   ============================================================ */
+:root {
+  /* ---- Corner radius (very rounded house style) ---- */
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+  --radius-2xl: 2.6rem;
+  --radius-pill: 999px;
+
+  /* ---- Shadows (warm-tinted, soft, never harsh black) ---- */
+  --shadow-soft: 0 1px 3px hsl(24 30% 25% / 0.07), 0 1px 2px hsl(24 30% 25% / 0.05);
+  --shadow-elevated: 0 6px 20px hsl(24 30% 25% / 0.09), 0 2px 5px hsl(24 30% 25% / 0.05);
+  --shadow-gold: 0 6px 18px hsl(38 58% 58% / 0.28);
+
+  /* ---- Signature pride gradients ---- */
+  --gradient-pride: linear-gradient(90deg,
+    hsl(350 78% 84%),
+    hsl(24 86% 82%),
+    hsl(46 90% 84%),
+    hsl(152 44% 80%),
+    hsl(204 70% 82%),
+    hsl(268 52% 84%));
+
+  --gradient-pride-vivid: linear-gradient(90deg,
+    #E40303, #FF8C00, #FFED00, #008026, #004DFF, #750787);
+
+  --bloom-app:
+    radial-gradient(ellipse 65% 50% at 100% 0%, rgba(254,202,202,0.30) 0%, transparent 100%),
+    radial-gradient(ellipse 55% 60% at 0% 100%, rgba(221,214,254,0.32) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 35% at 8% 8%, rgba(167,243,208,0.18) 0%, transparent 100%);
+
+  --bloom-web: linear-gradient(135deg,#FFE3E6 0%,#FFEFD6 18%,#FDF7CE 36%,#DFF3E3 54%,#DCE8FF 72%,#ECE0F5 100%);
+
+  --pride-aura: conic-gradient(from 150deg,
+    hsl(350 78% 84%) 0deg, hsl(24 86% 82%) 60deg, hsl(46 90% 84%) 120deg,
+    hsl(152 44% 80%) 180deg, hsl(204 70% 82%) 240deg, hsl(268 52% 84%) 300deg,
+    hsl(350 78% 84%) 360deg);
+
+  /* ---- Motion ---- */
+  --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 200ms;
+  --dur-base: 350ms;
+  --dur-slow: 600ms;
+}
