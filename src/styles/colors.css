@@ -1,0 +1,66 @@
+/* ============================================================
+   M Private Project — Color tokens
+   Values are HSL *components* (e.g. "38 58% 58%") so they compose
+   with alpha via  hsl(var(--gold) / 0.3).
+   ============================================================ */
+:root {
+  /* ---- Core surface & ink ---- */
+  --background: 0 0% 99%;
+  --foreground: 221 39% 11%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 221 39% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 221 39% 11%;
+
+  /* ---- Brand action ---- */
+  --primary: 221 39% 11%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 221 39% 11%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 220 14% 93%;
+  --accent-foreground: 221 39% 11%;
+  --destructive: 0 64% 48%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* ---- Lines & focus ---- */
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 221 39% 11%;
+
+  /* ---- Signature gold (the single luxe accent) ---- */
+  --gold: 38 58% 58%;
+  --gold-soft: 38 80% 96%;
+
+  /* ---- Pride pastel palette (soft, used for blooms, bars, chips) ---- */
+  --sage:  150 28% 54%;
+  --mist:  204 70% 82%;
+  --lilac: 268 52% 84%;
+  --butter: 46 88% 86%;
+  --blush: 350 78% 86%;
+  --peach:  24 86% 84%;
+  --mint:  152 44% 82%;
+
+  /* ---- Chart series (muted pride) ---- */
+  --chart-1: 263 68% 78%;
+  --chart-2:  48 78% 72%;
+  --chart-3: 132 35% 72%;
+  --chart-4: 207 78% 76%;
+  --chart-5: 286 52% 82%;
+  --chart-6:  24 18% 70%;
+
+  /* ---- Brand partner ---- */
+  --line-green: 145 96% 40%;
+
+  /* ---- Sidebar / admin shell ---- */
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 221 39% 11%;
+  --sidebar-primary: 221 39% 11%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 14% 96%;
+  --sidebar-accent-foreground: 221 39% 11%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 221 39% 11%;
+}

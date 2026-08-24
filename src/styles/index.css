@@ -1,0 +1,111 @@
+/* ============================================================
+   M Private Project — Design System entry point
+   ============================================================ */
+
+@import './fonts.css';
+@import './colors.css';
+@import './typography.css';
+@import './effects.css';
+
+/* ---- Base ---- */
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: hsl(var(--foreground));
+  background-color: #FDFCFB;
+  background-image: var(--bloom-app);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: var(--tracking-display);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+/* Branded text selection */
+::selection {
+  background: hsl(var(--gold) / 0.28);
+  color: hsl(var(--foreground));
+}
+/* Keyboard-only focus ring */
+:focus-visible {
+  outline: 2px solid hsl(var(--gold));
+  outline-offset: 2px;
+}
+
+/* ---- Brand utilities ---- */
+.font-display { font-family: var(--font-display); }
+.font-mono { font-family: var(--font-mono); }
+
+.text-gold { color: hsl(var(--gold)); }
+.bg-gold { background-color: hsl(var(--gold)); }
+.border-gold { border-color: hsl(var(--gold)); }
+.text-sage { color: hsl(var(--sage)); }
+.bg-gold-soft { background-color: hsl(var(--gold-soft)); }
+
+.shadow-soft { box-shadow: var(--shadow-soft); }
+.shadow-elevated { box-shadow: var(--shadow-elevated); }
+.shadow-gold-glow { box-shadow: var(--shadow-gold); }
+
+.glass-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: var(--shadow-soft);
+}
+
+.gradient-pride { background: var(--gradient-pride); }
+.gradient-pride-vivid { background: var(--gradient-pride-vivid); }
+.pride-aura { background: var(--pride-aura); }
+
+.pride-rule {
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-pride);
+}
+.rule-muted {
+  height: 1px;
+  background: hsl(var(--border));
+  width: 100%;
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.text-balance { text-wrap: balance; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+a { color: hsl(221 39% 11%); }
+a:hover { color: hsl(38 58% 45%); }
+
+@keyframes wj-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@keyframes wj-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes wj-tick { from { transform: scale(1.04); opacity: .6; } to { transform: scale(1); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,10 @@
+/* M Private Project — Webfonts
+   All four families are loaded from Google Fonts, matching the production app
+   exactly (src/index.css). No local binaries are required.
+
+   - EB Garamond  → display serif (English headlines, the "M" mark)
+   - Prompt       → body + Thai script (primary UI font)
+   - Inter        → English body fallback / numerals
+   - JetBrains Mono → mono (codes, IDs, timestamps)
+*/
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
