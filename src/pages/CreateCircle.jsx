@@ -3,6 +3,14 @@ import { Input } from '../components/ui/Input.jsx';
 import { fmt } from '../data.js';
 
 const TYPES = ['ดอกหัก', 'ดอกตาม', 'เปียประมูลดอก', 'จับฉลาก'];
+const FREQUENCIES = ['รายวัน', 'รายสัปดาห์', 'รายเดือน'];
+const WEEKDAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+
+function scheduleLabel(form) {
+  if (form.frequency === 'รายวัน') return 'เก็บทุกวัน';
+  if (form.frequency === 'รายสัปดาห์') return `เก็บทุกสัปดาห์ · วัน${WEEKDAYS[Number(form.weekday) || 0]}`;
+  return `เปียทุกวันที่ ${form.payoutDay || 25}`;
+}
 
 function typeBtnStyle(active) {
   return {
@@ -26,6 +34,7 @@ export function CreateCircle({ form, setForm, createCircle }) {
   const feeAmt = Math.round((pot * (Number(form.fee) || 0)) / 100);
   const setF = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const setType = (t) => () => setForm({ ...form, type: t });
+  const setFrequency = (f) => () => setForm({ ...form, frequency: f });
 
   return (
     <section style={{ animation: 'wj-in .4s var(--ease-brand)' }}>
@@ -56,6 +65,30 @@ export function CreateCircle({ form, setForm, createCircle }) {
             <div style={{ fontSize: 11.5, color: 'hsl(var(--muted-foreground))', marginTop: 8 }}>
               ดอกหัก = ผู้ยังไม่เปียจ่ายค่างวดหักดอก · ดอกตาม = จ่ายเต็ม รับดอกคืนท้ายวง · จับฉลาก = เรียงคิวไม่มีประมูล
             </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>ความถี่ในการเก็บเงิน/เปีย</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {FREQUENCIES.map((f) => (
+                <button key={f} onClick={setFrequency(f)} style={typeBtnStyle(form.frequency === f)}>
+                  {f}
+                </button>
+              ))}
+            </div>
+            {form.frequency === 'รายเดือน' && (
+              <div style={{ marginTop: 10 }}>
+                <Input label="วันเปียของเดือน" value={form.payoutDay} onChange={setF('payoutDay')} inputMode="numeric" />
+              </div>
+            )}
+            {form.frequency === 'รายสัปดาห์' && (
+              <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {WEEKDAYS.map((w, i) => (
+                  <button key={w} onClick={() => setForm({ ...form, weekday: i })} style={typeBtnStyle(Number(form.weekday) === i)}>
+                    {w}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <Input
             label="ค่าดูแลท้าวแชร์ (% ของวงเงิน)"
@@ -102,7 +135,7 @@ export function CreateCircle({ form, setForm, createCircle }) {
               </div>
               <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', margin: '16px 0' }} />
               <div style={{ fontSize: 11.5, opacity: 0.75, lineHeight: 1.7 }}>
-                รูปแบบ <b>{form.type}</b> · เปียทุกวันที่ 25 · สมาชิกยืนยันตัวตนก่อนเข้าวง · สลิปทุกงวดตรวจโดยท้าวและเก็บเป็นหลักฐานถาวร
+                รูปแบบ <b>{form.type}</b> · {scheduleLabel(form)} · สมาชิกยืนยันตัวตนก่อนเข้าวง · สลิปทุกงวดตรวจโดยท้าวและเก็บเป็นหลักฐานถาวร
               </div>
               <Button variant="gold" block onClick={createCircle} style={{ marginTop: 18 }}>
                 สร้างวงและส่งคำเชิญ

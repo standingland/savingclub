@@ -35,7 +35,7 @@ export default function App() {
   const [myBid, setMyBid] = useState('');
   const [payOpen, setPayOpen] = useState(false);
   const [slipSent, setSlipSent] = useState(false);
-  const [form, setForm] = useState({ name: 'วงเพื่อนบ้านสีลม', hand: 3000, hands: 12, type: 'ดอกหัก', fee: 2 });
+  const [form, setForm] = useState({ name: 'วงเพื่อนบ้านสีลม', hand: 3000, hands: 12, type: 'ดอกหัก', fee: 2, frequency: 'รายเดือน', payoutDay: 25, weekday: 1 });
   const [slips, setSlips] = useState(INITIAL_SLIPS);
 
   const toastTimer = useRef(null);
