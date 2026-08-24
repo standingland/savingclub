@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { id: 'live', label: 'ห้องเปียสด', dotColor: 'hsl(var(--destructive))', pulse: true },
   { id: 'create', label: 'ตั้งวงใหม่', dotColor: 'hsl(var(--gold))' },
   { id: 'owner', label: 'มุมท้าวแชร์', dotColor: 'hsl(var(--gold))' },
+  { id: 'notifications', label: 'การแจ้งเตือน', dotColor: 'hsl(var(--gold))' },
 ];
 
 const navButtonStyle = (active) => ({
@@ -25,7 +26,7 @@ const navButtonStyle = (active) => ({
   boxShadow: active ? 'var(--shadow-soft)' : 'none',
 });
 
-export function Sidebar({ route, onNavigate, phone }) {
+export function Sidebar({ route, onNavigate, email, onSignOut }) {
   return (
     <aside
       style={{
@@ -118,7 +119,7 @@ export function Sidebar({ route, onNavigate, phone }) {
               ส
             </div>
             <div style={{ minWidth: 0, lineHeight: 1.2 }}>
-              <div style={{ fontSize: 12.5, fontWeight: 700, fontFamily: 'var(--font-body)' }}>{phone || 'สมาชิกใหม่'}</div>
+              <div style={{ fontSize: 12.5, fontWeight: 700, fontFamily: 'var(--font-body)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{email}</div>
               <div style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))' }}>ยังไม่ยืนยันตัวตน</div>
             </div>
           </div>
@@ -146,6 +147,23 @@ export function Sidebar({ route, onNavigate, phone }) {
           >
             <div style={{ height: '100%', width: '0%', borderRadius: 99, background: 'hsl(var(--gold))' }} />
           </div>
+          <button
+            onClick={onSignOut}
+            style={{
+              width: '100%',
+              marginTop: 10,
+              border: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-body)',
+              fontSize: 11,
+              fontWeight: 600,
+              color: 'hsl(var(--destructive))',
+              textAlign: 'left',
+            }}
+          >
+            ออกจากระบบ
+          </button>
         </div>
         <a
           href="#/admin"

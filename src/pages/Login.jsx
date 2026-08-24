@@ -1,7 +1,46 @@
+import { useState } from 'react';
+import { supabase } from '../lib/supabase.js';
 import { BrandMark } from '../components/ui/BrandMark.jsx';
 import { Button } from '../components/ui/Button.jsx';
 
-export function Login({ phone, setPhone, onEnter }) {
+const fieldStyle = {
+  height: 46,
+  padding: '0 14px',
+  borderRadius: 'var(--radius)',
+  border: '1px solid hsl(var(--border))',
+  background: 'hsl(var(--secondary)/0.4)',
+  fontFamily: 'var(--font-body)',
+  fontSize: 14,
+  color: 'hsl(var(--foreground))',
+  outline: 'none',
+  boxSizing: 'border-box',
+  width: '100%',
+};
+
+export function Login() {
+  const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [checkEmail, setCheckEmail] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setError('');
+    setBusy(true);
+    if (mode === 'signup') {
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      setBusy(false);
+      if (error) return setError(error.message);
+      if (!data.session) return setCheckEmail(true);
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      setBusy(false);
+      if (error) return setError(error.message);
+    }
+  }
+
   return (
     <div
       style={{
@@ -19,11 +58,7 @@ export function Login({ phone, setPhone, onEnter }) {
       <div style={{ position: 'absolute', top: -140, right: -120, width: 420, height: 420, borderRadius: '50%', background: 'var(--pride-aura)', filter: 'blur(90px)', opacity: 0.4 }} />
       <div style={{ position: 'absolute', bottom: -160, left: -120, width: 380, height: 380, borderRadius: '50%', background: 'var(--pride-aura)', filter: 'blur(90px)', opacity: 0.25 }} />
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onEnter();
-        }}
+      <div
         style={{
           position: 'relative',
           width: 380,
@@ -48,42 +83,98 @@ export function Login({ phone, setPhone, onEnter }) {
           </div>
         </div>
 
-        <div style={{ marginTop: 26, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'hsl(var(--muted-foreground))' }}>
-              เบอร์โทรศัพท์
-            </span>
-            <input
-              type="tel"
-              placeholder="08x-xxx-xxxx"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              style={{
-                height: 46,
-                padding: '0 14px',
-                borderRadius: 'var(--radius)',
-                border: '1px solid hsl(var(--border))',
-                background: 'hsl(var(--secondary)/0.4)',
-                fontFamily: 'var(--font-body)',
-                fontSize: 14,
-                color: 'hsl(var(--foreground))',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-          </label>
-          <Button type="submit" variant="gold" pill style={{ marginTop: 4 }}>
-            เข้าสู่ระบบ
-          </Button>
-          <Button type="button" variant="outline" pill onClick={onEnter}>
-            เข้าสู่ระบบด้วย LINE
-          </Button>
-        </div>
+        {checkEmail ? (
+          <div
+            style={{
+              marginTop: 24,
+              padding: 16,
+              borderRadius: 'var(--radius)',
+              background: 'hsl(var(--sage)/0.12)',
+              border: '1px solid hsl(var(--sage)/0.4)',
+              fontSize: 13,
+              color: 'hsl(150 28% 34%)',
+              lineHeight: 1.7,
+              textAlign: 'center',
+            }}
+          >
+            ✓ ส่งอีเมลยืนยันไปที่ {email} แล้ว — กรุณาคลิกลิงก์ในอีเมลเพื่อยืนยันตัวตนก่อนเข้าสู่ระบบ
+          </div>
+        ) : (
+          <form onSubmit={submit} style={{ marginTop: 26, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', gap: 6, padding: 4, borderRadius: 'var(--radius-pill)', background: 'hsl(var(--secondary))' }}>
+              <button
+                type="button"
+                onClick={() => setMode('signin')}
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  cursor: 'pointer',
+                  height: 34,
+                  borderRadius: 'var(--radius-pill)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  background: mode === 'signin' ? 'hsl(var(--card))' : 'transparent',
+                  color: mode === 'signin' ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
+                  boxShadow: mode === 'signin' ? 'var(--shadow-soft)' : 'none',
+                }}
+              >
+                เข้าสู่ระบบ
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('signup')}
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  cursor: 'pointer',
+                  height: 34,
+                  borderRadius: 'var(--radius-pill)',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  background: mode === 'signup' ? 'hsl(var(--card))' : 'transparent',
+                  color: mode === 'signup' ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
+                  boxShadow: mode === 'signup' ? 'var(--shadow-soft)' : 'none',
+                }}
+              >
+                สมัครสมาชิก
+              </button>
+            </div>
+
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'hsl(var(--muted-foreground))' }}>
+                อีเมล
+              </span>
+              <input type="email" required placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={fieldStyle} />
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'hsl(var(--muted-foreground))' }}>
+                รหัสผ่าน
+              </span>
+              <input
+                type="password"
+                required
+                minLength={6}
+                placeholder="อย่างน้อย 6 ตัวอักษร"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={fieldStyle}
+              />
+            </label>
+
+            {error && <div style={{ fontSize: 12, color: 'hsl(var(--destructive))' }}>{error}</div>}
+
+            <Button type="submit" variant="gold" pill disabled={busy} style={{ marginTop: 4 }}>
+              {busy ? 'กำลังดำเนินการ…' : mode === 'signup' ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
+            </Button>
+          </form>
+        )}
 
         <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', textAlign: 'center', marginTop: 18, lineHeight: 1.7 }}>
           การเข้าสู่ระบบถือว่ายอมรับข้อตกลงการใช้งาน Saving Money Club
         </div>
-      </form>
+      </div>
     </div>
   );
 }
