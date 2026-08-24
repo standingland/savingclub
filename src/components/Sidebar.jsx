@@ -147,6 +147,22 @@ export function Sidebar({ route, onNavigate }) {
             <div style={{ height: '100%', width: '98%', borderRadius: 99, background: 'hsl(var(--gold))' }} />
           </div>
         </div>
+        <a
+          href="#/admin"
+          style={{
+            display: 'block',
+            textAlign: 'center',
+            marginTop: 10,
+            fontFamily: 'var(--font-mono)',
+            fontSize: 10,
+            letterSpacing: '.1em',
+            textTransform: 'uppercase',
+            color: 'hsl(var(--muted-foreground))',
+            textDecoration: 'none',
+          }}
+        >
+          หลังบ้าน →
+        </a>
       </div>
     </aside>
   );
