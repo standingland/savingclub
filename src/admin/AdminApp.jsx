@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LogoMark } from '../components/ui/LogoMark.jsx';
+import { BrandMark } from '../components/ui/BrandMark.jsx';
 import { DashboardTab } from './DashboardTab.jsx';
 import { MembersTab } from './MembersTab.jsx';
 import { CirclesTab } from './CirclesTab.jsx';
@@ -33,9 +33,9 @@ export function AdminApp() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <LogoMark size={30} />
+          <BrandMark size={30} />
           <div>
-            <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 15, lineHeight: 1 }}>วงใจ · หลังบ้าน</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, lineHeight: 1 }}>Saving Money Club · หลังบ้าน</div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, letterSpacing: '.14em', textTransform: 'uppercase', color: 'hsl(var(--muted-foreground))', marginTop: 3 }}>
               Back Office
             </div>

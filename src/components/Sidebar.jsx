@@ -1,4 +1,4 @@
-import { LogoMark } from './ui/LogoMark.jsx';
+import { BrandMark } from './ui/BrandMark.jsx';
 
 const NAV_ITEMS = [
   { id: 'dash', label: 'แดชบอร์ด', dotColor: 'hsl(var(--gold))' },
@@ -25,7 +25,7 @@ const navButtonStyle = (active) => ({
   boxShadow: active ? 'var(--shadow-soft)' : 'none',
 });
 
-export function Sidebar({ route, onNavigate }) {
+export function Sidebar({ route, onNavigate, phone }) {
   return (
     <aside
       style={{
@@ -48,9 +48,9 @@ export function Sidebar({ route, onNavigate }) {
         style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '2px 10px 16px', cursor: 'pointer' }}
         onClick={() => onNavigate('dash')}
       >
-        <LogoMark size={36} aura />
+        <BrandMark size={36} />
         <div>
-          <div style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 17, lineHeight: 1.05 }}>วงใจ</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15.5, lineHeight: 1.15 }}>Saving Money Club</div>
           <div
             style={{
               fontFamily: 'var(--font-mono)',
@@ -118,8 +118,8 @@ export function Sidebar({ route, onNavigate }) {
               ส
             </div>
             <div style={{ minWidth: 0, lineHeight: 1.2 }}>
-              <div style={{ fontSize: 12.5, fontWeight: 700, fontFamily: 'var(--font-body)' }}>สมชาย วงศ์ทอง</div>
-              <div style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))' }}>ยืนยันตัวตนแล้ว</div>
+              <div style={{ fontSize: 12.5, fontWeight: 700, fontFamily: 'var(--font-body)' }}>{phone || 'สมาชิกใหม่'}</div>
+              <div style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))' }}>ยังไม่ยืนยันตัวตน</div>
             </div>
           </div>
           <div
@@ -133,7 +133,7 @@ export function Sidebar({ route, onNavigate }) {
             }}
           >
             <span>เครดิต</span>
-            <b style={{ color: 'hsl(var(--gold))', fontSize: 12 }}>98/100</b>
+            <b style={{ color: 'hsl(var(--muted-foreground))', fontSize: 12 }}>ยังไม่มีคะแนน</b>
           </div>
           <div
             style={{
@@ -144,7 +144,7 @@ export function Sidebar({ route, onNavigate }) {
               overflow: 'hidden',
             }}
           >
-            <div style={{ height: '100%', width: '98%', borderRadius: 99, background: 'hsl(var(--gold))' }} />
+            <div style={{ height: '100%', width: '0%', borderRadius: 99, background: 'hsl(var(--gold))' }} />
           </div>
         </div>
         <a
