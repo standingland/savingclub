@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
+import { toHandNo } from '../lib/circles.js';
 import { Button } from '../components/ui/Button.jsx';
 import { card, field, th, td } from './adminStyles.js';
 import { Field } from './Field.jsx';
@@ -19,6 +20,28 @@ const EMPTY_CIRCLE = {
 const BID_TYPES = ['ดอกหัก', 'ดอกตาม', 'เปียประมูลดอก', 'จับฉลาก'];
 const FREQUENCIES = ['รายวัน', 'รายสัปดาห์', 'รายเดือน'];
 const WEEKDAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
+
+// ช่องแก้มือของสมาชิกในตาราง — เว้นว่าง = ยังไม่ระบุมือ
+function HandCell({ circleMember, onSave }) {
+  const [value, setValue] = useState(circleMember.hand_no == null ? '' : String(circleMember.hand_no));
+
+  useEffect(() => {
+    setValue(circleMember.hand_no == null ? '' : String(circleMember.hand_no));
+  }, [circleMember.hand_no]);
+
+  const saved = circleMember.hand_no == null ? '' : String(circleMember.hand_no);
+
+  return (
+    <input
+      style={{ ...field, width: 70, height: 30 }}
+      inputMode="numeric"
+      placeholder="—"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={() => value !== saved && onSave(circleMember, value)}
+    />
+  );
+}
 
 function scheduleLabel(c) {
   if (c.frequency === 'รายวัน') return 'เก็บทุกวัน';
@@ -49,7 +72,7 @@ export function CirclesTab() {
 
   async function loadCircleDetail(circleId) {
     const [{ data: cm }, { data: rd }] = await Promise.all([
-      supabase.from('circle_members').select('*, member:member_id(name)').eq('circle_id', circleId).order('hand_no'),
+      supabase.from('circle_members').select('*, member:member_id(name)').eq('circle_id', circleId).order('hand_no', { nullsFirst: false }),
       supabase.from('rounds').select('*').eq('circle_id', circleId).order('round_no'),
     ]);
     setCircleMembers(cm || []);
@@ -92,12 +115,19 @@ export function CirclesTab() {
     const { error } = await supabase.from('circle_members').insert({
       circle_id: selected.id,
       member_id: handForm.member_id,
-      hand_no: Number(handForm.hand_no),
+      hand_no: toHandNo(handForm.hand_no),
       role: handForm.role,
     });
     if (error) return setError(error.message);
     setHandForm({ member_id: '', hand_no: '', role: 'member' });
     loadCircleDetail(selected.id);
+  }
+
+  async function saveHandNo(circleMember, value) {
+    setError('');
+    const { error } = await supabase.from('circle_members').update({ hand_no: toHandNo(value) }).eq('id', circleMember.id);
+    if (error) setError(error.message);
+    loadCircleDetail(circleMember.circle_id);
   }
 
   async function addRound(e) {
@@ -262,7 +292,9 @@ export function CirclesTab() {
                 <tbody>
                   {circleMembers.map((cm) => (
                     <tr key={cm.id}>
-                      <td style={td}>{cm.hand_no}</td>
+                      <td style={td}>
+                        <HandCell circleMember={cm} onSave={saveHandNo} />
+                      </td>
                       <td style={td}>{cm.member?.name}</td>
                       <td style={td}>{cm.role === 'owner' ? 'ท้าวแชร์' : 'ลูกแชร์'}</td>
                     </tr>
@@ -289,9 +321,15 @@ export function CirclesTab() {
                     </select>
                   </Field>
                 </div>
-                <div style={{ width: 80 }}>
-                  <Field label="มือที่">
-                    <input style={field} inputMode="numeric" value={handForm.hand_no} onChange={(e) => setHandForm({ ...handForm, hand_no: e.target.value })} required />
+                <div style={{ width: 110 }}>
+                  <Field label="มือที่ (ไม่บังคับ)">
+                    <input
+                      style={field}
+                      inputMode="numeric"
+                      placeholder="ยังไม่ระบุ"
+                      value={handForm.hand_no}
+                      onChange={(e) => setHandForm({ ...handForm, hand_no: e.target.value })}
+                    />
                   </Field>
                 </div>
                 <div style={{ width: 120 }}>

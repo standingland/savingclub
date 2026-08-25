@@ -1,5 +1,5 @@
 import { Button } from '../components/ui/Button.jsx';
-import { fmt, fmtDate } from '../data.js';
+import { fmt, fmtDate, handLabel } from '../data.js';
 
 export function Dashboard({ member, circles, nextDue, loading, goCreate, goCircle, openPay }) {
   const hasCircles = circles.length > 0;
@@ -99,7 +99,7 @@ export function Dashboard({ member, circles, nextDue, loading, goCreate, goCircl
               <div>
                 <div style={{ fontWeight: 700, fontSize: 14 }}>{cm.circle?.name}</div>
                 <div style={{ fontSize: 11.5, color: 'hsl(var(--muted-foreground))', marginTop: 3 }}>
-                  มือที่ {cm.hand_no} · {cm.role === 'owner' ? 'ท้าวแชร์' : 'ลูกแชร์'} · {fmt(cm.circle?.hand_amount)}/งวด
+                  {handLabel(cm.hand_no)} · {cm.role === 'owner' ? 'ท้าวแชร์' : 'ลูกแชร์'} · {fmt(cm.circle?.hand_amount)}/งวด
                 </div>
               </div>
               <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>{cm.circle?.hands_count} มือ</div>

@@ -97,6 +97,13 @@ export function CreateCircle({ form, setForm, createCircle, busy, error }) {
             inputMode="numeric"
             hint="ตามธรรมเนียมมักเป็นมือแรกของวงหรือ 1–3%"
           />
+          <Input
+            label="มือของคุณ (ไม่บังคับ)"
+            value={form.ownerHand}
+            onChange={setF('ownerHand')}
+            inputMode="numeric"
+            hint="ท้าวแชร์มักถือมือแรก — เว้นว่างไว้ได้ถ้ายังไม่รู้ว่าจะรับมือที่เท่าไหร่ แล้วค่อยมาระบุภายหลัง"
+          />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

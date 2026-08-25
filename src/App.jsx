@@ -19,6 +19,7 @@ import {
   setSlipStatus,
   previewCircleByInviteCode,
   joinCircleByInviteCode,
+  setMyHandNo,
 } from './lib/circles.js';
 import { BID_SCRIPT, fmt, fmtDate } from './data.js';
 
@@ -35,7 +36,10 @@ const JOIN_ERRORS = {
   already_joined: 'คุณเข้าร่วมวงนี้อยู่แล้ว',
   hand_taken: 'มือถูกจับจองแล้ว ลองใหม่อีกครั้ง',
   invalid_invite_code: 'รหัสคำเชิญไม่ถูกต้อง',
+  invalid_hand_no: 'หมายเลขมือไม่ถูกต้องสำหรับวงนี้',
+  circle_full: 'วงนี้มีสมาชิกครบตามจำนวนมือแล้ว',
   no_member_profile: 'ไม่พบโปรไฟล์สมาชิกของบัญชีนี้',
+  not_a_circle_member: 'คุณไม่ได้อยู่ในวงนี้',
 };
 
 function clock(secs) {
@@ -61,7 +65,8 @@ export default function App() {
   const [myBid, setMyBid] = useState('');
   const [payOpen, setPayOpen] = useState(false);
   const [slipSent, setSlipSent] = useState(false);
-  const [form, setForm] = useState({ name: 'วงเพื่อนบ้านสีลม', hand: 3000, hands: 12, type: 'ดอกหัก', fee: 2, frequency: 'รายเดือน', payoutDay: 25, weekday: 1 });
+  // ownerHand = มือที่ท้าวแชร์ถือเอง เว้นว่างได้ถ้ายังไม่รู้ว่าจะรับมือที่เท่าไหร่
+  const [form, setForm] = useState({ name: 'วงเพื่อนบ้านสีลม', hand: 3000, hands: 12, type: 'ดอกหัก', fee: 2, frequency: 'รายเดือน', payoutDay: 25, weekday: 1, ownerHand: 1 });
   const [createBusy, setCreateBusy] = useState(false);
   const [createError, setCreateError] = useState('');
   const [joining, setJoining] = useState(false);
@@ -211,7 +216,7 @@ export default function App() {
       await refreshCircles();
       setRoute('circle');
     } catch (err) {
-      setCreateError(err.message);
+      setCreateError(err.message?.includes('invalid_hand_no') ? 'มือของคุณต้องอยู่ระหว่าง 1 ถึงจำนวนมือของวง' : err.message);
     } finally {
       setCreateBusy(false);
     }
@@ -224,12 +229,9 @@ export default function App() {
       try {
         const preview = await previewCircleByInviteCode(code);
         if (!preview) throw new Error('ไม่พบวงแชร์สำหรับรหัสนี้');
-        const taken = new Set(preview.taken_hands || []);
-        let handNo = 1;
-        while (taken.has(handNo) && handNo <= preview.hands_count) handNo++;
-        if (handNo > preview.hands_count) throw new Error('วงนี้เต็มแล้ว');
-        await joinCircleByInviteCode(code, handNo);
-        showToast('เข้าร่วมวง "' + preview.name + '" แล้ว');
+        // เข้าร่วมโดยยังไม่ระบุมือ แล้วค่อยไประบุในหน้าวงเมื่อรู้ว่าจะรับมือที่เท่าไหร่
+        await joinCircleByInviteCode(code, null);
+        showToast('เข้าร่วมวง "' + preview.name + '" แล้ว — เลือกมือของคุณได้ในหน้าวง');
         await refreshCircles();
       } catch (err) {
         const key = Object.keys(JOIN_ERRORS).find((k) => err.message?.includes(k));
@@ -237,6 +239,16 @@ export default function App() {
       } finally {
         setJoining(false);
       }
+    },
+    [showToast, refreshCircles],
+  );
+
+  // ระบุ/เปลี่ยน/ล้างมือของตัวเองในวงที่เข้าร่วมอยู่แล้ว ('' = ยังไม่ระบุ)
+  const updateMyHandNo = useCallback(
+    async (circleId, handNo) => {
+      await setMyHandNo(circleId, handNo);
+      showToast(handNo === '' || handNo === null ? 'ล้างมือของคุณแล้ว' : 'ระบุมือที่ ' + handNo + ' แล้ว');
+      await refreshCircles();
     },
     [showToast, refreshCircles],
   );
@@ -280,6 +292,8 @@ export default function App() {
             joinByCode={joinByCode}
             joining={joining}
             joinError={joinError}
+            memberId={member?.id}
+            setMyHandNo={updateMyHandNo}
           />
         )}
         {route === 'notifications' && <NotificationSettings userId={session.user.id} showToast={showToast} />}
