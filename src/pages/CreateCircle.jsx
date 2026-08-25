@@ -29,7 +29,7 @@ function typeBtnStyle(active) {
   };
 }
 
-export function CreateCircle({ form, setForm, createCircle }) {
+export function CreateCircle({ form, setForm, createCircle, busy, error }) {
   const pot = (Number(form.hand) || 0) * (Number(form.hands) || 0);
   const feeAmt = Math.round((pot * (Number(form.fee) || 0)) / 100);
   const setF = (k) => (e) => setForm({ ...form, [k]: e.target.value });
@@ -137,8 +137,9 @@ export function CreateCircle({ form, setForm, createCircle }) {
               <div style={{ fontSize: 11.5, opacity: 0.75, lineHeight: 1.7 }}>
                 รูปแบบ <b>{form.type}</b> · {scheduleLabel(form)} · สมาชิกยืนยันตัวตนก่อนเข้าวง · สลิปทุกงวดตรวจโดยท้าวและเก็บเป็นหลักฐานถาวร
               </div>
-              <Button variant="gold" block onClick={createCircle} style={{ marginTop: 18 }}>
-                สร้างวงและส่งคำเชิญ
+              {error && <div style={{ fontSize: 12, color: '#ffb4b4', marginTop: 10 }}>{error}</div>}
+              <Button variant="gold" block onClick={createCircle} disabled={busy} style={{ marginTop: 18 }}>
+                {busy ? 'กำลังสร้างวง…' : 'สร้างวงและส่งคำเชิญ'}
               </Button>
             </div>
           </div>

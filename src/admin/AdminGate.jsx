@@ -2,16 +2,20 @@ import { useState } from 'react';
 import { BrandMark } from '../components/ui/BrandMark.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { field } from './adminStyles.js';
+import { AdminAuthGate } from './AdminAuthGate.jsx';
 
 const PASSCODE = '1111';
 const SESSION_KEY = 'saving-money-club-admin-unlocked';
 
+// This passcode only keeps casual visitors from stumbling into #/admin -- it
+// is shipped in the JS bundle and is not a security boundary. The actual
+// access control is AdminAuthGate + database RLS (role = 'admin').
 export function AdminGate({ children }) {
   const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
   const [value, setValue] = useState('');
   const [error, setError] = useState(false);
 
-  if (unlocked) return children;
+  if (unlocked) return <AdminAuthGate>{children}</AdminAuthGate>;
 
   function submit(e) {
     e.preventDefault();

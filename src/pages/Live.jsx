@@ -25,6 +25,21 @@ export function Live({
 
   return (
     <section style={{ animation: 'wj-in .4s var(--ease-brand)' }}>
+      <div
+        style={{
+          borderRadius: 'var(--radius)',
+          padding: '10px 14px',
+          marginBottom: 18,
+          background: 'hsl(var(--gold)/0.1)',
+          border: '1px solid hsl(var(--gold)/0.35)',
+          fontSize: 12,
+          color: 'hsl(var(--foreground))',
+          lineHeight: 1.6,
+        }}
+      >
+        <b>ตัวอย่างฟีเจอร์</b> — หน้านี้จำลองการประมูลดอกด้วยผู้เสนอราคาสมมติ ยังไม่เชื่อมกับวงแชร์จริงของคุณ
+        และตัวเลขที่แสดงไม่ผูกกับข้อมูลบัญชีจริง
+      </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
         <div>
           <div
