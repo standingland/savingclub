@@ -10,6 +10,8 @@ const JOIN_ERRORS = {
   already_joined: 'คุณเข้าร่วมวงนี้อยู่แล้ว',
   hand_taken: 'มือนี้มีคนจับจองแล้ว กรุณาเลือกมือหมายเลขอื่น',
   invalid_invite_code: 'ลิงก์คำเชิญนี้ไม่ถูกต้องหรือหมดอายุ',
+  invalid_hand_no: 'หมายเลขมือไม่ถูกต้องสำหรับวงนี้',
+  circle_full: 'วงนี้มีสมาชิกครบตามจำนวนมือแล้ว',
   no_member_profile: 'ไม่พบโปรไฟล์สมาชิกของบัญชีนี้',
 };
 
@@ -62,16 +64,16 @@ export function JoinCircle({ code }) {
     return list;
   }, [preview]);
 
-  useEffect(() => {
-    if (availableHands.length && !handNo) setHandNo(String(availableHands[0]));
-  }, [availableHands, handNo]);
+  // สมาชิกที่ยังไม่ระบุมือก็นับเป็นหนึ่งที่นั่งในวง วงจึงเต็มเมื่อจำนวนสมาชิกครบจำนวนมือ
+  const isFull = preview ? (preview.members_count ?? 0) >= preview.hands_count : false;
 
   async function join(e) {
     e.preventDefault();
     setBusy(true);
     setError('');
     try {
-      await joinCircleByInviteCode(code, Number(handNo));
+      // handNo = '' → ยังไม่ระบุมือ (null)
+      await joinCircleByInviteCode(code, handNo);
       setJoined(true);
     } catch (err) {
       const key = Object.keys(JOIN_ERRORS).find((k) => err.message?.includes(k));
@@ -120,6 +122,7 @@ export function JoinCircle({ code }) {
         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, marginTop: 16 }}>เข้าร่วมวงสำเร็จ 🎉</div>
         <div style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', marginTop: 8, lineHeight: 1.6 }}>
           คุณเข้าร่วม &ldquo;{preview.name}&rdquo; แล้ว
+          {!handNo && <> · ยังไม่ได้ระบุมือ ระบุภายหลังได้ที่หน้า &ldquo;วงของฉัน&rdquo;</>}
         </div>
         <Button variant="gold" pill style={{ marginTop: 18 }} onClick={() => (window.location.hash = '')}>
           ไปที่วงของฉัน
@@ -136,13 +139,13 @@ export function JoinCircle({ code }) {
         {fmt(preview.hand_amount)}/งวด · {preview.hands_count} มือ · {preview.bid_type} · {preview.frequency}
       </div>
 
-      {availableHands.length === 0 ? (
-        <div style={{ fontSize: 13, color: 'hsl(var(--destructive))', marginTop: 20 }}>วงนี้เต็มแล้ว ไม่มีมือว่าง</div>
+      {isFull ? (
+        <div style={{ fontSize: 13, color: 'hsl(var(--destructive))', marginTop: 20 }}>วงนี้เต็มแล้ว สมาชิกครบตามจำนวนมือ</div>
       ) : (
         <>
           <label style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 22, textAlign: 'left' }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: 'hsl(var(--muted-foreground))' }}>
-              เลือกมือที่ต้องการ
+              เลือกมือที่ต้องการ (ไม่บังคับ)
             </span>
             <select
               value={handNo}
@@ -157,12 +160,18 @@ export function JoinCircle({ code }) {
                 fontSize: 14,
               }}
             >
+              <option value="">ยังไม่ระบุมือ — เลือกภายหลัง</option>
               {availableHands.map((n) => (
                 <option key={n} value={n}>
                   มือที่ {n}
                 </option>
               ))}
             </select>
+            <span style={{ fontSize: 11.5, color: 'hsl(var(--muted-foreground))', lineHeight: 1.6 }}>
+              {availableHands.length === 0
+                ? 'มือทั้งหมดถูกจองแล้ว แต่ยังเข้าร่วมวงแบบยังไม่ระบุมือได้ แล้วค่อยตกลงกับท้าวแชร์ภายหลัง'
+                : 'ถ้ายังไม่รู้ว่าจะรับมือที่เท่าไหร่ ให้เว้นไว้ก่อนได้ แล้วมาระบุทีหลังในหน้า “วงของฉัน”'}
+            </span>
           </label>
 
           {error && <div style={{ fontSize: 12, color: 'hsl(var(--destructive))', marginTop: 12 }}>{error}</div>}

@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase.js';
 import { Button } from '../components/ui/Button.jsx';
 import { card, field, th, td } from './adminStyles.js';
 import { Field } from './Field.jsx';
+import { handLabel } from '../data.js';
 
 const EMPTY = { circle_id: '', circle_member_id: '', round_id: '', amount: '' };
 
@@ -40,7 +41,7 @@ export function SlipsTab() {
       return;
     }
     const [{ data: cm }, { data: rd }] = await Promise.all([
-      supabase.from('circle_members').select('id, member:member_id(name)').eq('circle_id', circleId),
+      supabase.from('circle_members').select('id, hand_no, member:member_id(name)').eq('circle_id', circleId).order('hand_no', { nullsFirst: false }),
       supabase.from('rounds').select('id, round_no').eq('circle_id', circleId).order('round_no'),
     ]);
     setCircleMembers(cm || []);
@@ -87,7 +88,7 @@ export function SlipsTab() {
             <option value="">— เลือก —</option>
             {circleMembers.map((cm) => (
               <option key={cm.id} value={cm.id}>
-                {cm.member?.name}
+                {cm.member?.name} · {handLabel(cm.hand_no)}
               </option>
             ))}
           </select>
