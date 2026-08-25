@@ -2,9 +2,14 @@ import { useEffect, useState } from 'react';
 import App from './App.jsx';
 import { AdminApp } from './admin/AdminApp.jsx';
 import { AdminGate } from './admin/AdminGate.jsx';
+import { JoinCircle } from './pages/JoinCircle.jsx';
 
 function getRoute() {
-  return window.location.hash.startsWith('#/admin') ? 'admin' : 'app';
+  const hash = window.location.hash;
+  if (hash.startsWith('#/admin')) return { name: 'admin' };
+  const joinMatch = hash.match(/^#\/join\/([A-Za-z0-9]+)/);
+  if (joinMatch) return { name: 'join', code: joinMatch[1] };
+  return { name: 'app' };
 }
 
 export default function Root() {
@@ -16,11 +21,15 @@ export default function Root() {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  return route === 'admin' ? (
-    <AdminGate>
-      <AdminApp />
-    </AdminGate>
-  ) : (
-    <App />
-  );
+  if (route.name === 'admin') {
+    return (
+      <AdminGate>
+        <AdminApp />
+      </AdminGate>
+    );
+  }
+  if (route.name === 'join') {
+    return <JoinCircle code={route.code} />;
+  }
+  return <App />;
 }

@@ -1,0 +1,110 @@
+import { supabase } from './supabase.js';
+
+export async function fetchMyCircles(memberId) {
+  const { data, error } = await supabase
+    .from('circle_members')
+    .select(
+      'id, hand_no, role, circle:circle_id(id, name, hand_amount, hands_count, bid_type, frequency, payout_day, status, invite_code, owner_member_id)',
+    )
+    .eq('member_id', memberId)
+    .order('created_at');
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchMyCircleMemberIds(memberId) {
+  const { data, error } = await supabase.from('circle_members').select('id').eq('member_id', memberId);
+  if (error) throw error;
+  return (data ?? []).map((row) => row.id);
+}
+
+// Earliest not-yet-paid installment across every circle this member belongs to.
+export async function fetchNextDue(memberId) {
+  const circleMemberIds = await fetchMyCircleMemberIds(memberId);
+  if (!circleMemberIds.length) return null;
+
+  const { data, error } = await supabase
+    .from('installments')
+    .select(
+      'id, amount_due, status, round_id, circle_member_id, round:round_id(round_no, due_date, status, circle:circle_id(id, name))',
+    )
+    .in('circle_member_id', circleMemberIds)
+    .neq('status', 'paid');
+  if (error) throw error;
+
+  const withDueDate = (data ?? []).filter((row) => row.round?.due_date);
+  withDueDate.sort((a, b) => a.round.due_date.localeCompare(b.round.due_date));
+  return withDueDate[0] ?? null;
+}
+
+export async function fetchCircleDetail(circleId) {
+  const [handsRes, roundsRes] = await Promise.all([
+    supabase.from('circle_members').select('id, hand_no, role, member:member_id(name)').eq('circle_id', circleId).order('hand_no'),
+    supabase
+      .from('rounds')
+      .select('id, round_no, due_date, status, winning_bid, winner:winner_circle_member_id(hand_no, member:member_id(name))')
+      .eq('circle_id', circleId)
+      .order('round_no'),
+  ]);
+  if (handsRes.error) throw handsRes.error;
+  if (roundsRes.error) throw roundsRes.error;
+  return { hands: handsRes.data ?? [], rounds: roundsRes.data ?? [] };
+}
+
+export async function createCircleWithOwner(form, ownerMemberId) {
+  const { data: circle, error } = await supabase
+    .from('circles')
+    .insert({
+      name: form.name.trim(),
+      hand_amount: Number(form.hand) || 0,
+      hands_count: Number(form.hands) || 1,
+      bid_type: form.type,
+      fee_percent: Number(form.fee) || 0,
+      frequency: form.frequency,
+      payout_day: form.frequency === 'รายเดือน' ? Number(form.payoutDay) || 25 : null,
+      payout_weekday: form.frequency === 'รายสัปดาห์' ? Number(form.weekday) : null,
+      owner_member_id: ownerMemberId,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+
+  const { error: handError } = await supabase.from('circle_members').insert({
+    circle_id: circle.id,
+    member_id: ownerMemberId,
+    hand_no: 1,
+    role: 'owner',
+  });
+  if (handError) throw handError;
+
+  return circle;
+}
+
+export async function fetchOwnerSlips(ownerMemberId) {
+  const { data, error } = await supabase
+    .from('slips')
+    .select(
+      'id, amount, status, transferred_at, circle:circle_id!inner(id, name, owner_member_id), circle_member:circle_member_id(hand_no, member:member_id(name)), round:round_id(round_no)',
+    )
+    .eq('circle.owner_member_id', ownerMemberId)
+    .order('transferred_at', { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function setSlipStatus(id, status) {
+  const { error } = await supabase.from('slips').update({ status }).eq('id', id);
+  if (error) throw error;
+}
+
+export async function previewCircleByInviteCode(code) {
+  const { data, error } = await supabase.rpc('preview_circle_by_invite_code', { p_code: code });
+  if (error) throw error;
+  return data?.[0] ?? null;
+}
+
+export async function joinCircleByInviteCode(code, handNo) {
+  const { data, error } = await supabase.rpc('join_circle_by_invite_code', { p_code: code, p_hand_no: handNo });
+  if (error) throw error;
+  return data;
+}

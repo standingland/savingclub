@@ -3,7 +3,7 @@ import { BrandMark } from './ui/BrandMark.jsx';
 const NAV_ITEMS = [
   { id: 'dash', label: 'แดชบอร์ด', dotColor: 'hsl(var(--gold))' },
   { id: 'circle', label: 'วงของฉัน', dotColor: 'hsl(var(--gold))' },
-  { id: 'live', label: 'ห้องเปียสด', dotColor: 'hsl(var(--destructive))', pulse: true },
+  { id: 'live', label: 'ห้องเปียสด', dotColor: 'hsl(var(--destructive))', pulse: true, demo: true },
   { id: 'create', label: 'ตั้งวงใหม่', dotColor: 'hsl(var(--gold))' },
   { id: 'owner', label: 'มุมท้าวแชร์', dotColor: 'hsl(var(--gold))' },
   { id: 'notifications', label: 'การแจ้งเตือน', dotColor: 'hsl(var(--gold))' },
@@ -93,6 +93,22 @@ export function Sidebar({ route, onNavigate, email, onSignOut }) {
               }}
             />
             {item.label}
+            {item.demo && (
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 8,
+                  letterSpacing: '.08em',
+                  padding: '2px 6px',
+                  borderRadius: 999,
+                  background: active ? 'rgba(255,255,255,0.18)' : 'hsl(var(--secondary))',
+                  color: active ? 'inherit' : 'hsl(var(--muted-foreground))',
+                }}
+              >
+                ตัวอย่าง
+              </span>
+            )}
           </button>
         );
       })}
